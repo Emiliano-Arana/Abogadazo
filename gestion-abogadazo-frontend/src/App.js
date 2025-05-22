@@ -10,6 +10,10 @@ import Bienvenida from "./pages/Bienvenida"
 import GestionarPeril from "./pages/GestionarPerfil"
 import AsesoriaIA from "./pages/AsesoriaIA";
 import ScrollTop from "./components/ScrollTop"
+import BienvenidaAdmin from "./pages/BienvenidaAdmin"
+import AdministrarUsuario from "./pages/AdministrarUsuarios"
+import Estadisticas from "./pages/Estadisticas"
+import ConsultarAgenteTransito from "./pages/ConsultarAgenteTransito"
 
 function App() {
   return (
@@ -27,6 +31,11 @@ function App() {
             <Route path="/Bienvenida" element={<Bienvenida/>} />
             <Route path="/Gestionar-perfil" element={<GestionarPeril/>} />
             <Route path="/asesoria-ia" element={<AsesoriaIA />} />
+            <Route path="/BienvenidaAdmin" element={<BienvenidaAdmin />} />
+            <Route path="/AdministrarUsuario" element={<AdministrarUsuario />} />
+            <Route path="/Estadisticas" element={<Estadisticas />} />
+            <Route path="/ConsultarAgenteTransito" element={<ConsultarAgenteTransito />} />
+
 
           </Routes>
         </main>
