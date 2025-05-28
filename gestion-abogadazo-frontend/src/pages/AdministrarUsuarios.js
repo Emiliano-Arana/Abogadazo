@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { FaTrash, FaUser, FaEnvelope, FaSearch } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
+import Footer from "../components/Footer";
+import NavBarAdmin from "../components/NavBarAdmin";
+import "../styles/AdministrarUsuario.css";
 
 const initialUsers = [
   { id: 1, nombre: "Juan", apellido: "Pérez", correo: "juan@gmail.com", consultas: 10 },
@@ -27,7 +30,10 @@ const AdministrarUsuarios = () => {
   };
 
   return (
-    <div className="container py-5">
+    <>
+    <NavBarAdmin />
+    <div className="page-container">
+    <div className="container" style={{ paddingTop: '12rem' }}>
       <motion.h1
         className="text-center fw-bold mb-4"
         initial={{ opacity: 0, y: -30 }}
@@ -42,8 +48,9 @@ const AdministrarUsuarios = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
+        style={{ paddingTop: "3rem" }}
       >
-        <div className="input-group" style={{ maxWidth: "350px" }}>
+        <div className="input-group" style={{ maxWidth: "350px"}}>
           <span className="input-group-text">
             <FaSearch />
           </span>
@@ -124,6 +131,9 @@ const AdministrarUsuarios = () => {
         </div>
       )}
     </div>
+    </div>
+      <Footer />
+    </>
   );
 };
 

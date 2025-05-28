@@ -47,10 +47,10 @@ const AsesoriaIA = () => {
 
     return (
         <>
+        <NavBar2 />
         <div className="page-container">
-            <NavBar2 />
             <main className="content-wrap">
-            <div className="asesoriaia-container container py-5">
+            <div className="asesoriaia-container container" style={{ paddingTop: '5rem' }}>
                 <div className="main-content">
                 <div className="text-center mb-5">
                     <h1 className="fw-bold display-5 text-dark">Asesoría Legal Inteligente</h1>
@@ -128,10 +128,9 @@ const AsesoriaIA = () => {
 
                 
             </div>
-            </main>
-            <Footer />
-            
+            </main>            
         </div>
+        <Footer />
         </>
     );
 };
