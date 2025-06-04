@@ -27,28 +27,64 @@ SET time_zone = "+00:00";
 -- Table structure for table `usuario`
 --
 
-CREATE TABLE `usuario` (
-  `id` int(100) NOT NULL,
-  `usuario` varchar(100) NOT NULL,
-  `nombre` varchar(100) NOT NULL,
-  `apellido` varchar(100) NOT NULL,
-  `rol` varchar(100) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `password` varchar(100) NOT NULL
+CREATE TABLE IF NOT EXISTS usuario (
+  id int AUTO_INCREMENT PRIMARY KEY,
+  usuario varchar(100) NOT NULL unique,
+  nombre varchar(100) NOT NULL,
+  apellido varchar(100) NOT NULL,
+  rol varchar(100) NOT NULL,
+  email varchar(100) NOT NULL unique,
+  password varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-ALTER TABLE `usuario`
-  ADD PRIMARY KEY (`id`);
+CREATE TABLE IF NOT EXISTS agente_facultado (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  placa VARCHAR(50) NOT NULL,
+  nombre VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-ALTER TABLE `usuario`
-  MODIFY `id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+CREATE TABLE IF NOT EXISTS consulta_agentes (
+  id int AUTO_INCREMENT PRIMARY KEY,
+  fecha date NOT NULL,
+  id_usuario int,
+  id_agente int,
+  CONSTRAINT fk_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE,
+  CONSTRAINT fk_agente FOREIGN KEY (id_agente) REFERENCES agente_facultado(id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+CREATE TABLE IF NOT EXISTS consulta (
+  id int AUTO_INCREMENT PRIMARY KEY,
+  fecha date NOT NULL,
+  texto text NOT NULL,
+  id_usuario int,
+  CONSTRAINT fk_consulta_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-CREATE TABLE IF NOT EXISTS agentes_facultados (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            placa VARCHAR(50) NOT NULL,
-            nombre VARCHAR(255) NOT NULL
-        );
+CREATE TABLE IF NOT EXISTS respuesta (
+  id int AUTO_INCREMENT PRIMARY KEY,
+  texto text NOT NULL,
+  tipo varchar(50) NOT NULL,
+  id_consulta int,
+  CONSTRAINT fk_respuesta_consulta FOREIGN KEY (id_consulta) REFERENCES consulta(id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE IF NOT EXISTS retroalimentacion (
+  id int AUTO_INCREMENT PRIMARY KEY,
+  estrellas int NOT NULL CHECK (estrellas BETWEEN 1 AND 5),
+  comentarios text,
+  id_respuesta int,
+  CONSTRAINT fk_retroalimentacion_respuesta FOREIGN KEY (id_respuesta) REFERENCES respuesta(id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Indexes for dumped tables
