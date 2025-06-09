@@ -77,7 +77,7 @@ const ConsultarAgenteTransito = () => {
                                 <p className="card-text">
                                     <strong>Placa:</strong> {agenteEncontrado.agente?.placa}<br />
                                     <strong>Nombre:</strong> {agenteEncontrado.agente?.nombre}<br/>
-                                    El agente consultado <strong>SI</strong> esta facultado para infraccionar en la CDMX.                                    
+                                    El agente consultado <strong>SI</strong> esta facultado para infraccionar en la CDMX.
                                 </p>
                             </div>
                         </div>
