@@ -32,7 +32,7 @@ const ConsultarAgenteTransito = () => {
 
     return (
         <>
-            <NavBar2 />
+        <NavBar2 /> 
             <div className="page-container">
             <div className="container" style={{ paddingTop: '10rem' }}>
             <div className="background-image"></div>
