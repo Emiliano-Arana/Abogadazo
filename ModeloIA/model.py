@@ -6,6 +6,14 @@ from langchain.prompts import PromptTemplate
 from typing import Dict, List
 
 class AsistenteLegal:
+    #Categorias posibles para clasificar
+    CATEGORIAS = {
+        "multas": "Consultas sobre multas de tránsito, sanciones económicas y recursos",
+        "procedimientos": "Consultas sobre trámites, procesos administrativos o judiciales",
+        "reglamentacion": "Consultas sobre normas, leyes y reglamentos de tránsito",
+        "general": "Otras consultas generales sobre legislación de tránsito"
+    }
+
     def __init__(self):
         """
         Inicializa el asistente legal con:
@@ -16,6 +24,7 @@ class AsistenteLegal:
         """
         self._inicializar_modelos()
         self._configurar_cadena_qa()
+        self._configurar_clasificador()
 
     def _inicializar_modelos(self):
         """Configura los modelos necesarios"""
@@ -63,12 +72,48 @@ class AsistenteLegal:
             return_source_documents=True
         )
 
+    def _configurar_clasificador(self):
+        """Configura el prompt para clasificación de consultas"""
+        categorias_str = "\n".join([f"- {k}: {v}" for k, v in self.CATEGORIAS.items()])
+
+        clasificador_template = f"""Clasifica la siguiente consulta legal sobre tránsito en una de estas categorías:
+        {categorias_str}
+
+        Devuelve SOLO la palabra clave de la categoría (Multas, Procedimientos, Reglamentacion o General).
+
+        Consulta: {{consulta}}
+        Categoría:"""
+        
+        self.clasificador_prompt = PromptTemplate(
+            template=clasificador_template,
+            input_variables=["consulta"]
+        )
+
+    def _clasificar_consulta(self, consulta: str) -> str:
+        """Clasifica la consulta en una de las categorías definidas"""
+        try:
+            # Usamos el mismo LLM pero con temperatura más baja para clasificación
+            clasificador_chain = self.clasificador_prompt | self.llm
+            categoria = clasificador_chain.invoke({"consulta": consulta}).strip().lower()
+            
+            # Validamos que la categoría sea válida
+            return categoria if categoria in self.CATEGORIAS else "general"
+            
+        except Exception as e:
+            print(f"Error al clasificar consulta: {str(e)}")
+            return "general"
+
     def consultar(self, pregunta: str) -> Dict:
         try:
+            # Paso 1: Clasificar la consulta
+            categoria = self._clasificar_consulta(pregunta)
+
+            # Paso 2: Obtener respuesta legal
             resultado = self.qa_chain.invoke({"query": pregunta})
             
             return {
                 "respuesta": resultado["result"],
+                "categoria": categoria,
                 "fuentes": [
                     {
                         "documento": doc.metadata["source"],
@@ -81,5 +126,6 @@ class AsistenteLegal:
         except Exception as e:
             return {
                 "respuesta": f"Error procesando la consulta: {str(e)}",
+                "categoria": "general",
                 "fuentes": []
             }
