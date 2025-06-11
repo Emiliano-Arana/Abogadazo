@@ -7,13 +7,12 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend
 } from "recharts";
-import { FaStar, FaChartLine, FaUsers, FaSearch } from "react-icons/fa";
+import { FaStar, FaChartLine, FaSearch } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Estadisticas = () => {
   const consultasDia = 42;
   const promedioFeedback = 4.6;
-  const usuariosActivos = 123;
   const crecimientoMensual = 12;
 
   const consultasMes = [
@@ -53,14 +52,6 @@ const Estadisticas = () => {
 
   const pieColors = ["#007bff", "#28a745", "#ffc107", "#dc3545"];
 
-  const topConsultas = [
-    "¿Qué hacer si me detiene un policía en estado de ebriedad?",
-    "¿Qué hacer si atropellé a un peatón?",
-    "¿Me pueden remolcar sin estar presente?",
-    "¿Cuáles son mis derechos en un accidente sobre vía pública?",
-    "¿Qué hacer si acabo de chocar?"
-  ];
-
   return (
     <>
       <NavBarAdmin />
@@ -75,29 +66,22 @@ const Estadisticas = () => {
         </motion.h1>
 
         {/* Métricas rápidas */}
-        <div className="row text-center mb-5" style={{ paddingTop: '5rem'}}>
-          <div className="col-md-3">
+        <div className="row text-center mb-5" style={{ paddingTop: '4rem'}}>
+          <div className="col-md-4">
             <motion.div className="card shadow p-4" whileHover={{ scale: 1.05 }}>
               <FaSearch size={30} className="mb-2 text-primary" />
               <h5>Consultas hoy</h5>
               <p className="display-6 fw-bold">{consultasDia}</p>
             </motion.div>
           </div>
-          <div className="col-md-3">
+          <div className="col-md-4">
             <motion.div className="card shadow p-4" whileHover={{ scale: 1.05 }}>
               <FaStar size={30} className="mb-2 text-warning" />
               <h5>Promedio de feedback</h5>
               <p className="display-6 fw-bold">{promedioFeedback.toFixed(1)} ⭐</p>
             </motion.div>
           </div>
-          <div className="col-md-3">
-            <motion.div className="card shadow p-4" whileHover={{ scale: 1.05 }}>
-              <FaUsers size={30} className="mb-2 text-success" />
-              <h5>Usuarios activos</h5>
-              <p className="display-6 fw-bold">{usuariosActivos}</p>
-            </motion.div>
-          </div>
-          <div className="col-md-3">
+          <div className="col-md-4">
             <motion.div className="card shadow p-4" whileHover={{ scale: 1.05 }}>
               <FaChartLine size={30} className="mb-2 text-info" />
               <h5>Crecimiento mensual</h5>
@@ -139,18 +123,6 @@ const Estadisticas = () => {
               <Legend />
             </PieChart>
           </ResponsiveContainer>
-        </div>
-
-        {/* Consultas más frecuentes */}
-        <div>
-          <h4 className="mb-3">Consultas más frecuentes</h4>
-          <ul className="list-group">
-            {topConsultas.map((consulta, index) => (
-              <li key={index} className="list-group-item">
-                {index + 1}. {consulta}
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
       <Footer />
