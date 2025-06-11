@@ -24,7 +24,7 @@ def consulta_agente():
             'error': 'Número de placa requerido',
             'status_code': 400
         }), 400
-    if not id_usuario or not id_usuario.isdigit():
+    if not id_usuario:
         return jsonify({
             'error': 'Usuario no válido',
             'status_code': 400

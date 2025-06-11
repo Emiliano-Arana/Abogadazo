@@ -5,10 +5,13 @@ import Footer from "../components/Footer";
 import "../styles/AsesoriaIA.css";
 import { FaPaperPlane } from "react-icons/fa";
 import { consultarChatLegal } from "../services/legalService";
+import authService from "../services/authService";
 
 
 const AsesoriaIA = () => {
     const location = useLocation(); // Obtiene la ubicación de la ruta actual
+    const storedUser = authService.getCurrentUser();
+    const userId = storedUser?.id;
 
     useEffect(() => {
         window.scrollTo(0, 0); // Mueve el scroll a la parte superior
@@ -29,7 +32,7 @@ const AsesoriaIA = () => {
         setConsulta("");
 
         try {
-            const data = await consultarChatLegal(consulta);
+            const data = await consultarChatLegal(consulta,userId);
             const nuevaRespuesta = {
             pregunta: consulta,
             respuesta: data.respuesta,

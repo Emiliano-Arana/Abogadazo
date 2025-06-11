@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS usuario (
   password varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-CREATE TABLE IF NOT EXISTS agente_facultado (
+CREATE TABLE IF NOT EXISTS agentes_facultados (
   id INT AUTO_INCREMENT PRIMARY KEY,
   placa VARCHAR(50) NOT NULL,
   nombre VARCHAR(255) NOT NULL
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS consulta_agentes (
   CONSTRAINT fk_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id)
     ON DELETE SET NULL
     ON UPDATE CASCADE,
-  CONSTRAINT fk_agente FOREIGN KEY (id_agente) REFERENCES agente_facultado(id)
+  CONSTRAINT fk_agente FOREIGN KEY (id_agente) REFERENCES agentes_facultados(id)
     ON DELETE SET NULL
     ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

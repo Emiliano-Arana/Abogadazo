@@ -1,13 +1,13 @@
 const API_URL = 'http://localhost:5000/api/chat-legal/consulta';
 
-export const consultarChatLegal = async (pregunta) => {
+export const consultarChatLegal = async (pregunta,id_usuario) => {
   try {
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ pregunta })
+      body: JSON.stringify({ pregunta,id_usuario })
     });
     
     if (!response.ok) {
