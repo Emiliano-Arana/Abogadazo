@@ -233,3 +233,167 @@ def get_feedback_for_response(id_respuesta):
     finally:
         cursor.close()
         conn.close()
+
+#
+# A partir de aqui son funciones de admin, provisional
+#
+
+from datetime import date, timedelta
+
+def get_consultas_por_fecha(fecha: date) -> int:
+    """Obtiene el número de consultas para una fecha específica"""
+    conn = get_connection()
+    if conn is None:
+        return 0
+        
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "SELECT COUNT(*) FROM consulta WHERE fecha = %s",
+            (fecha,)
+        )
+        return cursor.fetchone()[0]
+    except Error as e:
+        print(f"Error al obtener consultas por fecha: {e}")
+        return 0
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_consultas_por_rango_fechas(inicio: date, fin: date) -> list:
+    """Obtiene el número de consultas por día en un rango de fechas"""
+    conn = get_connection()
+    if conn is None:
+        return []
+        
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute(
+            """SELECT fecha, COUNT(*) as consultas 
+               FROM consulta 
+               WHERE fecha BETWEEN %s AND %s
+               GROUP BY fecha
+               ORDER BY fecha""",
+            (inicio, fin)
+        )
+        
+        # Convertir a formato esperado por el frontend
+        resultados = cursor.fetchall()
+        
+        # Crear un diccionario con todos los días del mes
+        delta = fin - inicio
+        consultas_por_dia = {}
+        
+        for i in range(delta.days + 1):
+            dia = inicio + timedelta(days=i)
+            consultas_por_dia[dia.day] = 0
+        
+        # Llenar con los datos reales
+        for fila in resultados:
+            dia = fila['fecha'].day
+            consultas_por_dia[dia] = fila['consultas']
+        
+        # Convertir a formato de lista
+        return [{'dia': dia, 'consultas': count} for dia, count in consultas_por_dia.items()]
+        
+    except Error as e:
+        print(f"Error al obtener consultas por rango: {e}")
+        return []
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_tipos_consulta() -> list:
+    """Obtiene la distribución de tipos de consulta"""
+    conn = get_connection()
+    if conn is None:
+        return []
+        
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute(
+            """SELECT r.tipo as name, COUNT(*) as value 
+               FROM respuesta r
+               JOIN consulta c ON r.id_consulta = c.id
+               WHERE c.fecha BETWEEN DATE_SUB(CURDATE(), INTERVAL 30 DAY) AND CURDATE()
+               GROUP BY r.tipo
+               ORDER BY value DESC"""
+        )
+        
+        resultados = cursor.fetchall()
+        
+        # Mapear a los nombres que usa el frontend
+        mapeo_tipos = {
+            'multas': 'Multas',
+            'procedimientos': 'Procedimientos',
+            'reglamentacion': 'Reglamentación',
+            'general': 'Otras'
+        }
+        
+        return [
+            {
+                'name': mapeo_tipos.get(row['name'], row['name']),
+                'value': row['value']
+            }
+            for row in resultados
+        ]
+        
+    except Error as e:
+        print(f"Error al obtener tipos de consulta: {e}")
+        return []
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_estadisticas_feedback() -> dict:
+    """Obtiene estadísticas de retroalimentación"""
+    conn = get_connection()
+    if conn is None:
+        return {}
+        
+    cursor = conn.cursor()
+    try:
+        # Promedio de estrellas
+        cursor.execute(
+            "SELECT AVG(estrellas) FROM retroalimentacion"
+        )
+        promedio = cursor.fetchone()[0] or 0
+        
+        # Total de feedbacks
+        cursor.execute(
+            "SELECT COUNT(*) FROM retroalimentacion"
+        )
+        total = cursor.fetchone()[0]
+        
+        # Crecimiento mensual (consultas este mes vs mes pasado)
+        hoy = date.today()
+        primer_dia_mes_actual = hoy.replace(day=1)
+        primer_dia_mes_pasado = (primer_dia_mes_actual - timedelta(days=1)).replace(day=1)
+        ultimo_dia_mes_pasado = primer_dia_mes_actual - timedelta(days=1)
+        
+        cursor.execute(
+            "SELECT COUNT(*) FROM consulta WHERE fecha BETWEEN %s AND %s",
+            (primer_dia_mes_actual, hoy)
+        )
+        consultas_mes_actual = cursor.fetchone()[0]
+        
+        cursor.execute(
+            "SELECT COUNT(*) FROM consulta WHERE fecha BETWEEN %s AND %s",
+            (primer_dia_mes_pasado, ultimo_dia_mes_pasado)
+        )
+        consultas_mes_pasado = cursor.fetchone()[0] or 1  # Evitar división por cero
+        
+        crecimiento = ((consultas_mes_actual - consultas_mes_pasado) / consultas_mes_pasado) * 100
+        
+        return {
+            'promedio_feedback': round(float(promedio), 1),
+            'total_feedbacks': total,
+            'crecimiento_mensual': round(crecimiento, 1)
+        }
+        
+    except Error as e:
+        print(f"Error al obtener estadísticas de feedback: {e}")
+        return {}
+    finally:
+        cursor.close()
+        conn.close()

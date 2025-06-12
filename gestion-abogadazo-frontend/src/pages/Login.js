@@ -28,7 +28,15 @@ const LoginPage = () => {
 
     try {
       await authService.login(formData);
-      navigate('/Bienvenida');
+      // Obtener el usuario actual después del login
+      const currentUser = authService.getCurrentUser();
+      
+      // Redirigir según el rol
+      if (currentUser && currentUser.rol === 'admin') {
+        navigate('/BienvenidaAdmin');
+      } else {
+        navigate('/Bienvenida');
+      }
     } catch (err) {
       setError(err.message);
     } finally {

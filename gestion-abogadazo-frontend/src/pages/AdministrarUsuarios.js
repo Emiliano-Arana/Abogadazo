@@ -1,46 +1,78 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaTrash, FaUser, FaEnvelope, FaSearch, FaEdit } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Footer from "../components/Footer";
 import NavBarAdmin from "../components/NavBarAdmin";
 import "../styles/AdministrarUsuario.css";
-
-const initialUsers = [
-  { id: 1, nombre: "Juan", apellido: "Pérez", correo: "juan@gmail.com", rol: "usuario", consultas: 10 },
-  { id: 2, nombre: "María", apellido: "López", correo: "maria@gmail.com", rol: "usuario", consultas: 5 },
-  { id: 3, nombre: "Carlos", apellido: "Ramírez", correo: "carlos@gmail.com", rol: "usuario", consultas: 7 },
-];
+import { getAllUsers, updateUser, deleteUser } from "../services/userService";
 
 const AdministrarUsuarios = () => {
-  const [users, setUsers] = useState(initialUsers);
+  const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [userToDelete, setUserToDelete] = useState(null);
   const [userToEdit, setUserToEdit] = useState(null);
-  const [editData, setEditData] = useState({ nombre: "", apellido: "", correo: "", rol:"" });
+  const [editData, setEditData] = useState({ nombre: "", apellido: "", email: "", rol: "" });
+
+  const fetchUsers = async () => {
+    try {
+      const data = await getAllUsers();
+      // Suponiendo que viene así: { success: true, usuarios: [...] }
+      setUsers(data.usuarios || []);  // <- Aquí ajustas al arreglo real
+    } catch (error) {
+      console.error("Error al obtener los usuarios:", error);
+      setUsers([]);  // En caso de error, asegura que `users` siga siendo arreglo
+    }
+  };
+
+  useEffect(() => {
+  const fetchUsers = async () => {
+    try {
+      const data = await getAllUsers();
+      console.log("Usuarios cargados:", data);
+      setUsers(data.clientes || []);
+    } catch (error) {
+      console.error("Error al obtener usuarios:", error);
+      setUsers([]);
+    }
+  };
+
+  fetchUsers();
+}, []);
 
   const filteredUsers = users.filter((u) =>
     `${u.nombre} ${u.apellido}`.toLowerCase().includes(search.toLowerCase()) ||
     u.correo.toLowerCase().includes(search.toLowerCase())
   );
 
-  const eliminarUsuario = () => {
-    if (userToDelete) {
-      setUsers(users.filter((u) => u.id !== userToDelete.id));
-      setUserToDelete(null);
+  const eliminarUsuario = async () => {
+    try {
+      if (userToDelete) {
+        await deleteUser(userToDelete.usuario); // Asegúrate que este campo es el identificador
+        setUsers(users.filter((u) => u.usuario !== userToDelete.usuario));
+        setUserToDelete(null);
+      }
+    } catch (error) {
+      console.error("Error al eliminar usuario:", error);
     }
   };
 
   const abrirModalEdicion = (user) => {
     setUserToEdit(user);
-    setEditData({ nombre: user.nombre, apellido: user.apellido, correo: user.correo, rol: user.rol});
+    setEditData({ nombre: user.nombre, apellido: user.apellido, email: user.email, rol: user.rol });
   };
 
-  const guardarCambios = () => {
-    setUsers(users.map(u =>
-      u.id === userToEdit.id ? { ...u, ...editData } : u
-    ));
-    setUserToEdit(null);
+  const guardarCambios = async () => {
+    try {
+      const updatedUser = { ...userToEdit, ...editData };
+      await updateUser(updatedUser);
+      setUsers(users.map((u) =>
+        u.usuario === userToEdit.usuario ? updatedUser : u
+      ));
+      setUserToEdit(null);
+    } catch (error) {
+      console.error("Error al actualizar usuario:", error);
+    }
   };
 
   return (
@@ -101,7 +133,7 @@ const AdministrarUsuarios = () => {
                     <tr key={user.id}>
                       <td>{user.nombre}</td>
                       <td>{user.apellido}</td>
-                      <td>{user.correo}</td>
+                      <td>{user.email}</td>
                       <td>{user.rol}</td>
                       <td>{user.consultas}</td>
                       <td>
@@ -188,8 +220,8 @@ const AdministrarUsuarios = () => {
                       <input
                         type="email"
                         className="form-control"
-                        value={editData.correo}
-                        onChange={(e) => setEditData({ ...editData, correo: e.target.value })}
+                        value={editData.email}
+                        onChange={(e) => setEditData({ ...editData, email: e.target.value })}
                       />
                     </div>
                     <div className="mb-3">

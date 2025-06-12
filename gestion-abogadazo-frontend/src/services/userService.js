@@ -34,3 +34,8 @@ export const deleteUser = async (userId) => {
   });
   return await response.json();
 };
+
+export const getAllUsers = async () => {
+  const response = await fetch(`http://localhost:3000/usuarios/get_clientes`);
+  return await response.json();
+};

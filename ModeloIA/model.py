@@ -11,7 +11,7 @@ class AsistenteLegal:
         "multas": "Consultas sobre multas de tránsito, sanciones económicas y recursos",
         "procedimientos": "Consultas sobre trámites, procesos administrativos o judiciales",
         "reglamentacion": "Consultas sobre normas, leyes y reglamentos de tránsito",
-        "general": "Otras consultas generales sobre legislación de tránsito"
+        "general": "Otras consultas sobre legislación de tránsito"
     }
 
     def __init__(self):
@@ -79,7 +79,9 @@ class AsistenteLegal:
         clasificador_template = f"""Clasifica la siguiente consulta legal sobre tránsito en una de estas categorías:
         {categorias_str}
 
-        Devuelve SOLO la palabra clave de la categoría (Multas, Procedimientos, Reglamentacion o General).
+        Devuelve SOLO la palabra clave de la categoría (multas, procedimientos, reglamentacion o general).
+
+        Prioriza las primeras 3 categorias, si la consulta no entra en ninguna de esas 3 devuelve General
 
         Consulta: {{consulta}}
         Categoría:"""
@@ -107,6 +109,7 @@ class AsistenteLegal:
         try:
             # Paso 1: Clasificar la consulta
             categoria = self._clasificar_consulta(pregunta)
+            print(categoria)
 
             # Paso 2: Obtener respuesta legal
             resultado = self.qa_chain.invoke({"query": pregunta})

@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS 
 from model import AsistenteLegal
-from datetime import datetime
+from datetime import datetime, timedelta
 import database
 
 app = Flask(__name__)
@@ -115,6 +115,90 @@ def consulta_legal():
         return jsonify({
             'error': 'Error al procesar la consulta',
             'details': str(e)
+        }), 500
+
+
+
+#
+# Obtener administrador (provisional)
+#
+@app.route('/api/admin/stats/daily', methods=['GET'])
+def get_daily_stats():
+    try:
+        # Obtener estadísticas del día actual
+        fecha_hoy = datetime.now().date()
+        consultas_hoy = database.get_consultas_por_fecha(fecha_hoy)
+        
+        return jsonify({
+            'success': True,
+            'consultas_hoy': consultas_hoy,
+            'status_code': 200
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'error': 'Error al obtener estadísticas diarias',
+            'details': str(e),
+            'status_code': 500
+        }), 500
+
+@app.route('/api/admin/stats/monthly', methods=['GET'])
+def get_monthly_stats():
+    try:
+        # Obtener estadísticas del mes actual
+        hoy = datetime.now()
+        primer_dia_mes = hoy.replace(day=1)
+        ultimo_dia_mes = (hoy.replace(day=28) + timedelta(days=4)).replace(day=1) - timedelta(days=1)
+        
+        consultas_mes = database.get_consultas_por_rango_fechas(primer_dia_mes, ultimo_dia_mes)
+        
+        return jsonify({
+            'success': True,
+            'consultas_mes': consultas_mes,
+            'status_code': 200
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'error': 'Error al obtener estadísticas mensuales',
+            'details': str(e),
+            'status_code': 500
+        }), 500
+
+@app.route('/api/admin/stats/types', methods=['GET'])
+def get_consultation_types():
+    try:
+        tipos_consulta = database.get_tipos_consulta()
+        
+        return jsonify({
+            'success': True,
+            'tipos_consulta': tipos_consulta,
+            'status_code': 200
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'error': 'Error al obtener tipos de consulta',
+            'details': str(e),
+            'status_code': 500
+        }), 500
+
+@app.route('/api/admin/stats/feedback', methods=['GET'])
+def get_feedback_stats():
+    try:
+        feedback_stats = database.get_estadisticas_feedback()
+        
+        return jsonify({
+            'success': True,
+            'feedback_stats': feedback_stats,
+            'status_code': 200
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'error': 'Error al obtener estadísticas de feedback',
+            'details': str(e),
+            'status_code': 500
         }), 500
 
 # ==============================================

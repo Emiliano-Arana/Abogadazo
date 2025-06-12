@@ -1,5 +1,5 @@
 // src/pages/AdminStats.jsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Footer from "../components/Footer";
 import NavBarAdmin from "../components/NavBarAdmin";
@@ -9,24 +9,52 @@ import {
 } from "recharts";
 import { FaStar, FaChartLine, FaSearch } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { 
+  getDailyStats, 
+  getMonthlyStats, 
+  getConsultationTypes, 
+  getFeedbackStats 
+} from "../services/statsService";
 
 const Estadisticas = () => {
-  const consultasDia = 42;
-  const promedioFeedback = 4.6;
-  const crecimientoMensual = 12;
+  const [stats, setStats] = useState({
+    consultasDia: 0,
+    promedioFeedback: 0,
+    crecimientoMensual: 0,
+    consultasMes: [],
+    tiposConsultas: []
+  });
+  const [loading, setLoading] = useState(true);
 
-  const consultasMes = [
-    { dia: 1, consultas: 10 }, { dia: 2, consultas: 20 }, { dia: 3, consultas: 5 },
-    { dia: 4, consultas: 15 }, { dia: 5, consultas: 30 }, { dia: 6, consultas: 8 },
-    { dia: 7, consultas: 18 }, { dia: 8, consultas: 12 }, { dia: 9, consultas: 14 },
-    { dia: 10, consultas: 22 }, { dia: 11, consultas: 6 }, { dia: 12, consultas: 10 },
-    { dia: 13, consultas: 9 }, { dia: 14, consultas: 5 }, { dia: 15, consultas: 17 },
-    { dia: 16, consultas: 8 }, { dia: 17, consultas: 20 }, { dia: 18, consultas: 13 },
-    { dia: 19, consultas: 11 }, { dia: 20, consultas: 19 }, { dia: 21, consultas: 22 },
-    { dia: 22, consultas: 8 }, { dia: 23, consultas: 16 }, { dia: 24, consultas: 7 },
-    { dia: 25, consultas: 14 }, { dia: 26, consultas: 10 }, { dia: 27, consultas: 9 },
-    { dia: 28, consultas: 13 }, { dia: 29, consultas: 11 }, { dia: 30, consultas: 12 }
-  ];
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setLoading(true);
+        
+        const [daily, monthly, types, feedback] = await Promise.all([
+          getDailyStats(),
+          getMonthlyStats(),
+          getConsultationTypes(),
+          getFeedbackStats()
+        ]);
+        
+        setStats({
+          consultasDia: daily.consultas_hoy,
+          promedioFeedback: feedback.promedio_feedback,
+          crecimientoMensual: feedback.crecimiento_mensual,
+          consultasMes: monthly.consultas_mes,
+          tiposConsultas: types.tipos_consulta
+        });
+        
+      } catch (error) {
+        console.error("Error fetching stats:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchStats();
+  }, []);
 
   const agruparConsultasPorSemana = (consultasMes) => {
     const semanas = [0, 0, 0, 0];
@@ -41,16 +69,13 @@ const Estadisticas = () => {
     }));
   };
 
-  const consultasPorSemana = agruparConsultasPorSemana(consultasMes);
-
-  const tiposConsultas = [
-    { name: "Choques", value: 45 },
-    { name: "Atropellamientos", value: 25 },
-    { name: "Conducción bajo efectos del alcohol", value: 20 },
-    { name: "Otras", value: 10 }
-  ];
-
+  const consultasPorSemana = agruparConsultasPorSemana(stats.consultasMes);
   const pieColors = ["#007bff", "#28a745", "#ffc107", "#dc3545"];
+
+  if (loading) {
+    return <div className="text-center mt-5">Cargando estadísticas...</div>;
+  }
+
 
   return (
     <>
@@ -71,21 +96,25 @@ const Estadisticas = () => {
             <motion.div className="card shadow p-4" whileHover={{ scale: 1.05 }}>
               <FaSearch size={30} className="mb-2 text-primary" />
               <h5>Consultas hoy</h5>
-              <p className="display-6 fw-bold">{consultasDia}</p>
+              <p className="display-6 fw-bold">{stats.consultasDia}</p>
             </motion.div>
           </div>
           <div className="col-md-4">
             <motion.div className="card shadow p-4" whileHover={{ scale: 1.05 }}>
               <FaStar size={30} className="mb-2 text-warning" />
               <h5>Promedio de feedback</h5>
-              <p className="display-6 fw-bold">{promedioFeedback.toFixed(1)} ⭐</p>
+              <p className="display-6 fw-bold">
+                {typeof stats.promedioFeedback === "number" ? stats.promedioFeedback.toFixed(1) : "N/A"} ⭐
+              </p>
             </motion.div>
           </div>
           <div className="col-md-4">
             <motion.div className="card shadow p-4" whileHover={{ scale: 1.05 }}>
               <FaChartLine size={30} className="mb-2 text-info" />
               <h5>Crecimiento mensual</h5>
-              <p className="display-6 fw-bold">{crecimientoMensual}%</p>
+              <p className="display-6 fw-bold">
+                {typeof stats.crecimientoMensual === "number" ? `${stats.crecimientoMensual}%` : "N/A"}
+              </p>
             </motion.div>
           </div>
         </div>
@@ -109,13 +138,13 @@ const Estadisticas = () => {
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
-                data={tiposConsultas}
+                data={stats.tiposConsultas}
                 dataKey="value"
                 nameKey="name"
                 outerRadius={100}
                 label
               >
-                {tiposConsultas.map((entry, index) => (
+                {stats.tiposConsultas.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={pieColors[index % pieColors.length]} />
                 ))}
               </Pie>

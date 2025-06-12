@@ -79,7 +79,22 @@ module.exports = {
 
         // Obtener todos los clientes
         obtenerClientes: function(conexion, callback) {
-            const query = "SELECT id, usuario, nombre, apellido, rol, email FROM usuario WHERE rol = 'cliente' OR rol = 'client'";
+            const query = `
+                SELECT 
+                    u.id, 
+                    u.usuario, 
+                    u.nombre, 
+                    u.apellido, 
+                    u.rol, 
+                    u.email, 
+                    COUNT(c.id) AS consultas
+                FROM usuario u
+                LEFT JOIN consulta c ON c.id_usuario = u.id
+                WHERE u.rol = 'usuario'
+                GROUP BY u.id, u.usuario, u.nombre, u.apellido, u.rol, u.email
+                ORDER BY u.nombre, u.apellido;
+                `;
+
             conexion.query(query, (err, resultados) => {
                 if (err) return callback(err);
                 callback(null, resultados);
