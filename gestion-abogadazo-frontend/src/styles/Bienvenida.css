@@ -15,6 +15,10 @@
   justify-content: center;
 }
 
+.card-title {
+  font-size: 1.1rem;
+}
+
 .hero-overlay {
   position: absolute;
   inset: 0;
@@ -36,8 +40,8 @@
 
 /* Tarjetas de servicio */
 .servicio-card {
-  width: 90%;
-  max-width: 400px;
+  width: 100%;
+  max-width: 330px;
   border-radius: 1rem;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   margin: auto;
@@ -45,7 +49,7 @@
 
 .servicio-card:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
 .card-img-wrapper {

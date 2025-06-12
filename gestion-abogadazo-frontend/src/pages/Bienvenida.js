@@ -1,28 +1,28 @@
-import React, { useRef,useState } from "react";
+import React, { useRef } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import "../styles/Bienvenida.css";
 import fondoHome from "../assets/home.png";
 import ConsultaLegal from "../assets/ConsultaLegal.png";
-import multa from "../assets/multa.jpg";
+// import multa from "../assets/multa.jpg";
 import documentos from "../assets/documentos.png";
 import agentes from "../assets/agentes.jpg";
 import NavBar2 from "../components/NavBar2";
 import Footer from "../components/Footer";
 
-import { consultarAgente } from '../services/agentesService';
+// import { consultarAgente } from '../services/agentesService';
 
 const Bienvenida = () => {
     const agentesRef = useRef(null);
     const documentosRef = useRef(null);
-    const [placaBusqueda, setPlacaBusqueda] = useState('');
-    const [agenteEncontrado, setAgenteEncontrado] = useState(null);
-    const [errorBusqueda, setErrorBusqueda] = useState(null);
-    const [cargando, setCargando] = useState(false);
+    // const [placaBusqueda, setPlacaBusqueda] = useState('');
+    // const [agenteEncontrado, setAgenteEncontrado] = useState(null);
+    // const [errorBusqueda, setErrorBusqueda] = useState(null);
+    // const [cargando, setCargando] = useState(false);
 
     const servicios = [
         { img: ConsultaLegal, title: "Asesoría legal gratuita" },
-        { img: multa, title: "Consulta de multas" },
+        // { img: multa, title: "Consulta de multas" },
         { img: documentos, title: "Guías y recursos legales" },
         { img: agentes, title: "Consultar agentes facultados" },
     ];
@@ -32,26 +32,6 @@ const Bienvenida = () => {
         agentesRef.current.scrollIntoView({ behavior: "smooth" });
         } else if (title.includes("Guías") && documentosRef.current) {
         documentosRef.current.scrollIntoView({ behavior: "smooth" });
-        }
-    };
-
-    const handleBuscarAgente = async () => {
-        if (!placaBusqueda.trim()) {
-            setErrorBusqueda('Por favor ingresa un número de placa');
-            return;
-        }
-
-        setCargando(true);
-        setErrorBusqueda(null);
-        setAgenteEncontrado(null);
-
-        try {
-            const resultado = await consultarAgente(placaBusqueda);
-            setAgenteEncontrado(resultado);
-        } catch (error) {
-            setErrorBusqueda(error.message || 'Error al buscar el agente');
-        } finally {
-            setCargando(false);
         }
     };
 
@@ -70,7 +50,7 @@ const Bienvenida = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1 }}
                 >
-                <h1 className="display-4 fw-bold">Bienvenido a Abogadazo</h1>
+                <h1 className="display-4">Bienvenido a Abogadazo</h1>
                 <p className="lead mt-3">
                     Tu plataforma de confianza para resolver cualquier situación legal de tránsito.
                 </p>
@@ -80,7 +60,7 @@ const Bienvenida = () => {
 
             {/* Texto de guía */}
             <div className="container text-center mt-5">
-            <h2 className="display-4 fw-bold text-dark mb-2">
+            <h2 className="display-4 text-dark mb-2">
                 ¿Cómo podemos ayudarte?
             </h2>
             <h5 className="fw-light text-muted">
@@ -93,59 +73,58 @@ const Bienvenida = () => {
             <div className="container servicios-grid py-4">
             <div className="row g-4">
             {servicios.map((item, index) => {
-    const isAsesoria = item.title === "Asesoría legal gratuita";
-    return (
-        <motion.div
-        key={index}
-        className="col-sm-6 col-lg-6 d-flex justify-content-center align-items-center my-4"
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: index * 0.2 }}
-        viewport={{ once: true }}
-        onClick={() => {
-            if (!isAsesoria) handleCardClick(item.title);
-        }}
-        style={{ cursor: isAsesoria ? "pointer" : "pointer" }}
-        >
-        {isAsesoria ? (
-            <Link to="/asesoria-ia" className="text-decoration-none text-white">
-            <div className="card servicio-card text-white text-center border-0 rounded-4 overflow-hidden shadow-lg">
-                <div className="card-img-wrapper">
-                <img
-                    src={item.img}
-                    className="card-img-top img-fluid"
-                    alt={item.title}
-                />
-                </div>
-                <div className="card-body bg-dark bg-opacity-75">
-                <h5 className="card-title fw-bold mb-0">{item.title}</h5>
-                </div>
-            </div>
-            </Link>
-        ) : (
-            <div
-            className="card servicio-card text-white text-center border-0 rounded-4 overflow-hidden shadow-lg"
-            >
-            <div className="card-img-wrapper">
-                <img
-                src={item.img}
-                className="card-img-top img-fluid"
-                alt={item.title}
-                />
-            </div>
-            <div className="card-body bg-dark bg-opacity-75">
-                <h5 className="card-title fw-bold mb-0">{item.title}</h5>
-            </div>
-            </div>
-        )}
-        </motion.div>
-    );
-    })}
+                const isAsesoria = item.title === "Asesoría legal gratuita";
+                const isAgentes = item.title === "Consultar agentes facultados";
+
+                const cardContent = (
+                    <div className="card servicio-card text-white text-center border-0 rounded-4 overflow-hidden shadow-lg h-100">
+                    <div className="card-img-wrapper">
+                        <img
+                        src={item.img}
+                        className="card-img-top img-fluid"
+                        alt={item.title}
+                        />
+                    </div>
+                    <div className="card-body bg-dark bg-opacity-75">
+                        <h5 className="card-title fw-bold mb-0">{item.title}</h5>
+                    </div>
+                    </div>
+                );
+
+                return (
+                    <motion.div
+                    key={index}
+                    className="col-12 col-md-4 d-flex justify-content-center align-items-center"
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: index * 0.2 }}
+                    viewport={{ once: true }}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                        if (!isAsesoria && !isAgentes) handleCardClick(item.title);
+                    }}
+                    >
+                    {isAsesoria ? (
+                        <Link to="/asesoria-ia" className="text-decoration-none text-white w-100">
+                        {cardContent}
+                        </Link>
+                    ) : isAgentes ? (
+                        <Link to="/ConsultarAgenteTransito" className="text-decoration-none text-white w-100">
+                        {cardContent}
+                        </Link>
+                    ) : (
+                        cardContent
+                    )}
+                    </motion.div>
+                );
+                })}
+
 
             </div>
             </div>
 
             {/* Sección de Consulta de agentes */}
+            {/*
             <div ref={agentesRef} className="container py-5">
             <hr className="my-5 border border-dark border-2 opacity-75" />
             <h3 className="fw-bold text-center mb-3">
@@ -197,7 +176,7 @@ const Bienvenida = () => {
                             </div>
                         )}
             </div>
-            </div>
+            </div>*/}
 
             {/* Sección de Documentos legales */}
             <div ref={documentosRef} className="container py-5">
