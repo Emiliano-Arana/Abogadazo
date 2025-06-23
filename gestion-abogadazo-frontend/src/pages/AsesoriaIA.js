@@ -39,6 +39,7 @@ const AsesoriaIA = () => {
                 pregunta: consulta,
                 respuesta: data.respuesta,
                 fuentes: data.fuentes,
+                id_respuesta: data.id_respuesta //guardar por cada respuesta
             };
             setHistorial((prev) => {
                 const actualizado = [...prev];
