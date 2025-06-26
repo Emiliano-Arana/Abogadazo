@@ -164,6 +164,30 @@ def get_monthly_stats():
             'details': str(e),
             'status_code': 500
         }), 500
+        
+# estadisticas agentes
+@app.route('/api/admin/stats/monthlyagentes', methods=['GET'])
+def get_monthly_stats():
+    try:
+        # Obtener estadísticas del mes actual
+        hoy = datetime.now()
+        primer_dia_mes = hoy.replace(day=1)
+        ultimo_dia_mes = (hoy.replace(day=28) + timedelta(days=4)).replace(day=1) - timedelta(days=1)
+        
+        consultas_mes = database.get_consultas_agentes_por_rango_fechas(primer_dia_mes, ultimo_dia_mes)
+        
+        return jsonify({
+            'success': True,
+            'consultas_mes': consultas_mes,
+            'status_code': 200
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'error': 'Error al obtener estadísticas mensuales',
+            'details': str(e),
+            'status_code': 500
+        }), 500
 
 @app.route('/api/admin/stats/types', methods=['GET'])
 def get_consultation_types():

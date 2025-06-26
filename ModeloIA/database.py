@@ -302,6 +302,50 @@ def get_consultas_por_rango_fechas(inicio: date, fin: date) -> list:
     finally:
         cursor.close()
         conn.close()
+        
+        
+def get_consultas_agentes_por_rango_fechas(inicio: date, fin: date) -> list:
+    """Obtiene el número de consultas por día en un rango de fechas"""
+    conn = get_connection()
+    if conn is None:
+        return []
+        
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute(
+            """SELECT fecha, COUNT(*) as consultas 
+               FROM consulta_agentes 
+               WHERE fecha BETWEEN %s AND %s
+               GROUP BY fecha
+               ORDER BY fecha""",
+            (inicio, fin)
+        )
+        
+        # Convertir a formato esperado por el frontend
+        resultados = cursor.fetchall()
+        
+        # Crear un diccionario con todos los días del mes
+        delta = fin - inicio
+        consultas_por_dia = {}
+        
+        for i in range(delta.days + 1):
+            dia = inicio + timedelta(days=i)
+            consultas_por_dia[dia.day] = 0
+        
+        # Llenar con los datos reales
+        for fila in resultados:
+            dia = fila['fecha'].day
+            consultas_por_dia[dia] = fila['consultas']
+        
+        # Convertir a formato de lista
+        return [{'dia': dia, 'consultas': count} for dia, count in consultas_por_dia.items()]
+        
+    except Error as e:
+        print(f"Error al obtener consultas por rango: {e}")
+        return []
+    finally:
+        cursor.close()
+        conn.close()
 
 def get_tipos_consulta() -> list:
     """Obtiene la distribución de tipos de consulta"""

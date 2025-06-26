@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import NavBar2 from "../components/NavBar2";
 import Footer from "../components/Footer";
 import "../styles/AsesoriaIA.css";
 import { FaPaperPlane, FaStar } from "react-icons/fa";
-import { consultarChatLegal } from "../services/legalService";
+import { consultarChatLegal, enviarFeedbackLegal } from "../services/legalService";
 import authService from "../services/authService";
-import axios from "axios"; 
 
 const AsesoriaIA = () => {
     const location = useLocation();
     const storedUser = authService.getCurrentUser();
     const userId = storedUser?.id;
+    const chatEndRef = useRef(null);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -21,6 +21,12 @@ const AsesoriaIA = () => {
     const [historial, setHistorial] = useState([]);
     const [hoveredRating, setHoveredRating] = useState({});
     const [selectedRatings, setSelectedRatings] = useState({}); 
+
+    useEffect(() => {
+    if (chatEndRef.current) {
+        chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+    }, [historial]);
 
     const manejarEnvio = async () => {
         if (consulta.trim() === "") return;
@@ -60,21 +66,21 @@ const AsesoriaIA = () => {
     };
 
     // envia calificacion al backend
-    const calificarRespuesta = async (index, rating) => {
-        const item = historial[index];
-        setSelectedRatings((prev) => ({ ...prev, [index]: rating }));
+const calificarRespuesta = async (index, rating) => {
+    const item = historial[index];
+    setSelectedRatings((prev) => ({ ...prev, [index]: rating }));
 
-        try {
-            await axios.post("/api/feedback", {
-                userId,
-                pregunta: item.pregunta,
-                respuesta: item.respuesta,
-                rating,
-            });
-        } catch (error) {
-            console.error("Error al enviar calificación:", error);
-        }
-    };
+    try {
+        await enviarFeedbackLegal({
+            userId,
+            pregunta: item.pregunta,
+            respuestaId: item.id_respuesta,
+            rating,
+        });
+    } catch (error) {
+        console.error("Error al enviar calificación:", error);
+    }
+};
 
     return (
         <>
@@ -93,8 +99,8 @@ const AsesoriaIA = () => {
                             {/* Seccion del chat */}
                             <div className="row">
                                 <div className="col-lg-8 mb-4">
-                                    <div className="chat-box p-4 rounded-4 shadow-sm bg-light">
-                                        <div className="chat-historial overflow-auto mb-4" style={{ maxHeight: "400px" }}>
+                                    <div className="chat-box p-4 rounded-4 shadow-sm bg-light d-flex flex-column">
+                                        <div className="chat-historial overflow-auto mb-4" style={{ maxHeight: "400px", overflowY: "auto", scrollBehavior: "smooth", flexGrow: 1}}>
                                             {historial.length === 0 ? (
                                                 <p className="text-muted fw-light">Aún no has realizado ninguna consulta.</p>
                                             ) : (
@@ -136,6 +142,7 @@ const AsesoriaIA = () => {
                                                     </div>
                                                 ))
                                             )}
+                                            <div ref={chatEndRef} />
                                         </div>
 
                                         {/* Input para nueva consulta */}

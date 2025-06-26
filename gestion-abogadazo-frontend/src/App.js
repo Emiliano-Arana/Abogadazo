@@ -14,6 +14,7 @@ import BienvenidaAdmin from "./pages/BienvenidaAdmin"
 import AdministrarUsuario from "./pages/AdministrarUsuarios"
 import Estadisticas from "./pages/Estadisticas"
 import ConsultarAgenteTransito from "./pages/ConsultarAgenteTransito"
+import RutaProtegida from "./services/rutaProtegida";
 
 function App() {
   return (
@@ -28,15 +29,13 @@ function App() {
             <Route path="/Contacto" element={<Contacto/>} />
             <Route path="/Login" element={<Login/>} />      
             <Route path="/Sing-in" element={<Signin/>} />
-            <Route path="/Bienvenida" element={<Bienvenida/>} />
-            <Route path="/Gestionar-perfil" element={<GestionarPeril/>} />
-            <Route path="/asesoria-ia" element={<AsesoriaIA />} />
-            <Route path="/BienvenidaAdmin" element={<BienvenidaAdmin />} />
-            <Route path="/AdministrarUsuario" element={<AdministrarUsuario />} />
-            <Route path="/Estadisticas" element={<Estadisticas />} />
-            <Route path="/ConsultarAgenteTransito" element={<ConsultarAgenteTransito />} />
-
-
+            <Route path="/Bienvenida" element={<RutaProtegida> <Bienvenida/> </RutaProtegida>} />
+            <Route path="/Gestionar-perfil" element={<RutaProtegida> <GestionarPeril/> </RutaProtegida>} />
+            <Route path="/asesoria-ia" element={<RutaProtegida> <AsesoriaIA /> </RutaProtegida>} />
+            <Route path="/BienvenidaAdmin" element={<RutaProtegida> <BienvenidaAdmin /> </RutaProtegida>} />
+            <Route path="/AdministrarUsuario" element={<RutaProtegida> <AdministrarUsuario /> </RutaProtegida>} />
+            <Route path="/Estadisticas" element={ <Estadisticas /> } />
+            <Route path="/ConsultarAgenteTransito" element={<RutaProtegida> <ConsultarAgenteTransito /> </RutaProtegida>} />
           </Routes>
         </main>
       </div>

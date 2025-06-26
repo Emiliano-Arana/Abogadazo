@@ -1,4 +1,5 @@
 const API_URL = 'http://localhost:5000/api/chat-legal/consulta';
+const FEEDBACK_URL = 'http://localhost:5000/api/chat-legal/feedback';
 
 export const consultarChatLegal = async (pregunta,id_usuario) => {
   try {
@@ -26,3 +27,25 @@ export const consultarChatLegal = async (pregunta,id_usuario) => {
     throw error;
   }
 };
+
+export const enviarFeedbackLegal = async ({ userId, pregunta, respuesta, rating }) => {
+  try {
+    const response = await fetch(FEEDBACK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId, pregunta, respuesta, rating })
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al enviar feedback');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error al enviar calificación:', error);
+    throw error;
+  }
+};
+

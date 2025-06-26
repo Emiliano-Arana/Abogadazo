@@ -22,6 +22,7 @@ const Estadisticas = () => {
     promedioFeedback: 0,
     crecimientoMensual: 0,
     consultasMes: [],
+    consultasMesAgentes: [],
     tiposConsultas: []
   });
   const [loading, setLoading] = useState(true);
@@ -43,6 +44,7 @@ const Estadisticas = () => {
           promedioFeedback: feedback.promedio_feedback,
           crecimientoMensual: feedback.crecimiento_mensual,
           consultasMes: monthly.consultas_mes,
+          consultasMesAgentes: monthly.consultas_mes_agentes,
           tiposConsultas: types.tipos_consulta
         });
         
@@ -69,7 +71,21 @@ const Estadisticas = () => {
     }));
   };
 
+    const agruparConsultasdeAgentePorSemana = (consultasMesAgentes) => {
+    const semanas = [0, 0, 0, 0];
+    consultasMesAgentes.forEach(({ dia, consultas }) => {
+      const semanaIndex = Math.floor((dia - 1) / 8);
+      semanas[semanaIndex] += consultas;
+    });
+
+    return semanas.map((consultas, i) => ({
+      semana: `Semana ${i + 1}`,
+      consultas
+    }));
+  };
+
   const consultasPorSemana = agruparConsultasPorSemana(stats.consultasMes);
+  const consultasAgentesPorSemana = agruparConsultasdeAgentePorSemana(stats.consultasMesAgentes)
   const pieColors = ["#007bff", "#28a745", "#ffc107", "#dc3545"];
 
   if (loading) {
@@ -95,7 +111,7 @@ const Estadisticas = () => {
           <div className="col-md-4">
             <motion.div className="card shadow p-4" whileHover={{ scale: 1.05 }}>
               <FaSearch size={30} className="mb-2 text-primary" />
-              <h5>Consultas hoy</h5>
+              <h5>Consultas al chat hoy</h5>
               <p className="display-6 fw-bold">{stats.consultasDia}</p>
             </motion.div>
           </div>
@@ -121,9 +137,21 @@ const Estadisticas = () => {
 
         {/* Gráfica de barras por semana */}
         <div className="mb-5" style={{ paddingTop: '5rem'}}>
-          <h4 className="mb-3">Consultas en el mes por semana</h4>
+          <h4 className="mb-3">Consultas en el mes por semana en chat de IA</h4>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={consultasPorSemana}>
+              <XAxis dataKey="semana" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="consultas" fill="#007bff" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="mb-5" style={{ paddingTop: '5rem'}}>
+          <h4 className="mb-3">Consultas en el mes de agentes de tránsito</h4>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={consultasAgentesPorSemana}>
               <XAxis dataKey="semana" />
               <YAxis />
               <Tooltip />
