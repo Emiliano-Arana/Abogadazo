@@ -20,6 +20,17 @@ export const getMonthlyStats = async () => {
   return data;
 };
 
+export const getMonthlyStatsAgents = async () => {
+  const response = await fetch('http://localhost:5000/api/admin/stats/monthlyagents');
+  const data = await response.json();
+  
+  if (!response.ok) {
+    throw new Error(data.message || 'Error al obtener estadísticas mensuales');
+  }
+  
+  return data;
+};
+
 export const getConsultationTypes = async () => {
   const response = await fetch('http://localhost:5000/api/admin/stats/types');
   const data = await response.json();

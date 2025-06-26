@@ -14,17 +14,6 @@ const AdministrarUsuarios = () => {
   const [userToEdit, setUserToEdit] = useState(null);
   const [editData, setEditData] = useState({ nombre: "", apellido: "", email: "", rol: "" });
 
-  const fetchUsers = async () => {
-    try {
-      const data = await getAllUsers();
-      // Suponiendo que viene así: { success: true, usuarios: [...] }
-      setUsers(data.usuarios || []);  // <- Aquí ajustas al arreglo real
-    } catch (error) {
-      console.error("Error al obtener los usuarios:", error);
-      setUsers([]);  // En caso de error, asegura que `users` siga siendo arreglo
-    }
-  };
-
   useEffect(() => {
   const fetchUsers = async () => {
     try {
@@ -40,10 +29,13 @@ const AdministrarUsuarios = () => {
   fetchUsers();
 }, []);
 
-  const filteredUsers = users.filter((u) =>
-    `${u.nombre} ${u.apellido}`.toLowerCase().includes(search.toLowerCase()) ||
-    u.correo.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredUsers = users.filter((u) => {
+    const searchTerm = search.toLowerCase();
+    return (
+      `${u.nombre || ''} ${u.apellido || ''}`.toLowerCase().includes(searchTerm) ||
+      (u.email || u.correo || '').toLowerCase().includes(searchTerm)
+    );
+  });
 
   const eliminarUsuario = async () => {
     try {

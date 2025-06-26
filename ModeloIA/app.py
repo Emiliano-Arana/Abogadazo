@@ -166,8 +166,8 @@ def get_monthly_stats():
         }), 500
         
 # estadisticas agentes
-@app.route('/api/admin/stats/monthlyagentes', methods=['GET'])
-def get_monthly_stats():
+@app.route('/api/admin/stats/monthlyagents', methods=['GET'])
+def get_monthly_stats_agents():
     try:
         # Obtener estadísticas del mes actual
         hoy = datetime.now()

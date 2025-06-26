@@ -11,7 +11,8 @@ import { FaStar, FaChartLine, FaSearch } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { 
   getDailyStats, 
-  getMonthlyStats, 
+  getMonthlyStats,
+  getMonthlyStatsAgents,
   getConsultationTypes, 
   getFeedbackStats 
 } from "../services/statsService";
@@ -32,9 +33,10 @@ const Estadisticas = () => {
       try {
         setLoading(true);
         
-        const [daily, monthly, types, feedback] = await Promise.all([
+        const [daily, monthly, monthlyagents,types, feedback] = await Promise.all([
           getDailyStats(),
           getMonthlyStats(),
+          getMonthlyStatsAgents(),
           getConsultationTypes(),
           getFeedbackStats()
         ]);
@@ -44,7 +46,7 @@ const Estadisticas = () => {
           promedioFeedback: feedback.promedio_feedback,
           crecimientoMensual: feedback.crecimiento_mensual,
           consultasMes: monthly.consultas_mes,
-          consultasMesAgentes: monthly.consultas_mes_agentes,
+          consultasMesAgentes: monthlyagents.consultas_mes,
           tiposConsultas: types.tipos_consulta
         });
         
