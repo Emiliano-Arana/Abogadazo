@@ -3,7 +3,7 @@
 
 -- Creación de tablas (sintaxis PostgreSQL)
 CREATE TABLE usuario (
-  id SERIAL PRIMARY KEY,  -- SERIAL reemplaza AUTO_INCREMENT
+  id SERIAL PRIMARY KEY,
   usuario VARCHAR(100) NOT NULL UNIQUE,
   nombre VARCHAR(100) NOT NULL,
   apellido VARCHAR(100) NOT NULL,

@@ -1,3 +1,6 @@
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+os.environ["OLLAMA_NUM_THREADS"] = "16"  # Usa 12 hilos para LLM
 from langchain_ollama import OllamaLLM
 from langchain.chains import RetrievalQA
 from langchain_ollama import OllamaEmbeddings
@@ -30,7 +33,7 @@ class AsistenteLegal:
         """Configura los modelos necesarios"""
         try:
             # 1. Modelo de embeddings
-            self.embeddings = OllamaEmbeddings(model="mxbai-embed-large")
+            self.embeddings = OllamaEmbeddings(model="mxbai-embed-large",)
             
             # 2. Base vectorial con las leyes
             self.vectorstore = FAISS.load_local(
@@ -41,10 +44,11 @@ class AsistenteLegal:
             
             # 3. Modelo de lenguaje (versión corregida de tu modelo)
             self.llm = OllamaLLM(
-                model="llama3.2",
+                model="gemma2:2b",
                 temperature=0.3,
-                num_ctx=4096,
-                timeout=300 #tiempo de espera
+                num_ctx=2048,
+                timeout=300,
+                f16_kv=False,        # Más estable en CPU
             )
             
         except Exception as e:
@@ -53,10 +57,18 @@ class AsistenteLegal:
     def _configurar_cadena_qa(self):
         """Configura la cadena de pregunta-respuesta"""
         # Prompt idéntico al que tenías originalmente
-        prompt_template = """Eres un experto en legislación de tránsito. Responde usando solo la información proporcionada.
+        prompt_template = """
+        Eres un experto en legislación de tránsito con amplia experiencia en leyes y normativas. 
+        Responde únicamente usando la información proporcionada en el contexto, que contiene artículos legales relacionados con la consulta.
+        No inventes información fuera del contexto.
+        Brinda una respuesta clara, detallada y precisa, citando los artículos relevantes.
+        Si la consulta requiere opinión, emítela basada en los artículos del contexto.
+        Si te piden ayuda u orientacion, emite un juicio que le sea de ayuda basado en los articulos proporcionados.
+
         Contexto: {context}
         Pregunta: {question}
-        Respuesta precisa citando artículos:"""
+        Respuesta precisa citando artículos y explicando la fundamentación legal:
+        """
 
         prompt = PromptTemplate(
             template=prompt_template,

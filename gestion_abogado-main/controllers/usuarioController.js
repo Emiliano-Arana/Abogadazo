@@ -3,7 +3,7 @@ var usuarioModel = require("../model/usuario");
 
 module.exports = {
     index: function(req, res) {
-        usuario.obtener(conexion, function(err, datos) {
+        usuarioModel.obtener(conexion, function(err, datos) {
             if (err) {
                 // Si hay un error, devuelve un código 500 con el mensaje de error
                 return res.status(500).json({
@@ -77,7 +77,7 @@ module.exports = {
                 res.status(201).json({
                     error: false,
                     message: "Usuario creado exitosamente",
-                    usuarioId: resultado.insertId
+                    usuarioId: resultado.id
                 });
             });
         });
@@ -152,6 +152,7 @@ module.exports = {
                 // Actualizar el usuario
                 usuarioModel.actualizarUsuarioPorUsuario(conexion, usuarioActual, datosActualizados, (err, resultado) => {
                     if (err) {
+                        console.log(err.message)
                         return res.status(500).json({
                             error: true,
                             message: "Error al actualizar el usuario",
@@ -159,7 +160,7 @@ module.exports = {
                         });
                     }
 
-                    if (resultado.affectedRows === 0) {
+                    if (resultado.rowCount === 0) {
                         return res.status(404).json({
                             error: true,
                             message: "No se realizaron cambios o el usuario no existe"
@@ -295,7 +296,7 @@ module.exports = {
             });
         }
 
-        usuarioModel.eliminarPorUsuario(conexion, username, (err, affectedRows) => {
+        usuarioModel.eliminarPorUsuario(conexion, username, (err, rowCount) => {
             if (err) {
                 return res.status(500).json({
                     error: true,
@@ -304,7 +305,7 @@ module.exports = {
                 });
             }
 
-            if (affectedRows === 0) {
+            if (rowCount === 0) {
                 return res.status(404).json({
                     error: true,
                     message: "Usuario no encontrado"
@@ -330,7 +331,7 @@ module.exports = {
             });
         }
 
-        usuarioModel.eliminarPorUsuarioYPassword(conexion, username, password, (err, affectedRows) => {
+        usuarioModel.eliminarPorUsuarioYPassword(conexion, username, password, (err, rowCount) => {
             if (err) {
                 return res.status(500).json({
                     error: true,
@@ -339,7 +340,7 @@ module.exports = {
                 });
             }
 
-            if (affectedRows === 0) {
+            if (rowCount === 0) {
                 return res.status(401).json({
                     error: true,
                     message: "Credenciales inválidas o usuario no encontrado"

@@ -2,12 +2,25 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS 
 from model import AsistenteLegal
 from datetime import datetime, timedelta
+from flask_ngrok import run_with_ngrok
 import database
 
+import os
+
+# REGISTRA TU AUTHTOKEN DE NGROK
+os.system("ngrok config add-authtoken cr_2z5DjRDtk5jD7aFcW1E7TUXhQGm")
+
 app = Flask(__name__)
+run_with_ngrok(app)
 CORS(app)  # Habilita CORS
 
 legal_ai = AsistenteLegal()
+
+
+@app.route("/")
+def home():
+    return "Hola desde ngrok en Flask"
+
 
 # ==============================================
 # RUTAS RELACIONADAS CON AGENTES
@@ -33,7 +46,7 @@ def consulta_agente():
     try:
         # Consultar la base de datos
         agente = database.agent_by_platenumber(placa)
-        
+        print(agente)
         if not agente:
             return jsonify({
                 'error': f'Agente con placa {placa} no encontrado',
@@ -291,4 +304,4 @@ def status_check():
 
 #Inicio de la aplicacion
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run()
