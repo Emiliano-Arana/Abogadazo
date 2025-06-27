@@ -70,6 +70,55 @@ def consulta_agente():
 # RUTAS RELACIONADAS CON EL CHAT LEGAL (IA)
 # ==============================================
 
+@app.route('/api/chat-legal/feedback', methods=['POST'])
+def agregar_feedback():
+    try:
+        data = request.get_json()
+        
+        # Validar campos requeridos
+        required_fields = ['userId', 'respuesta', 'rating']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({
+                    'error': f'Campo {field} es requerido',
+                    'status_code': 400
+                }), 400
+        
+        # Validar que el rating sea un número entre 1 y 5
+        rating = data['rating']
+        if not isinstance(rating, int) or rating < 1 or rating > 5:
+            return jsonify({
+                'error': 'El rating debe ser un número entero entre 1 y 5',
+                'status_code': 400
+            }), 400
+        
+        # Registrar el feedback en la base de datos
+        success = database.register_feedback(
+            id_respuesta=data['respuesta'],
+            estrellas=rating
+        )
+        
+        if not success:
+            app.logger.error("No se pudo registrar el feedback en la base de datos")
+            return jsonify({
+                'error': 'Error al registrar el feedback',
+                'status_code': 500
+            }), 500
+        
+        return jsonify({
+            'success': True,
+            'message': 'Feedback registrado exitosamente',
+            'status_code': 201
+        }), 201
+        
+    except Exception as e:
+        app.logger.error(f"Error en agregar_feedback: {str(e)}")
+        return jsonify({
+            'error': 'Error interno del servidor al procesar el feedback',
+            'details': str(e),
+            'status_code': 500
+        }), 500
+
 @app.route('/api/chat-legal/consulta', methods=['POST'])
 def consulta_legal():
     data = request.get_json()
@@ -211,7 +260,6 @@ def get_consultation_types():
 def get_feedback_stats():
     try:
         feedback_stats = database.get_estadisticas_feedback()
-        
         return jsonify({
             'success': True,
             'feedback_stats': feedback_stats,

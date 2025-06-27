@@ -74,7 +74,7 @@ const calificarRespuesta = async (index, rating) => {
         await enviarFeedbackLegal({
             userId,
             pregunta: item.pregunta,
-            respuestaId: item.id_respuesta,
+            respuesta: item.id_respuesta,
             rating,
         });
     } catch (error) {

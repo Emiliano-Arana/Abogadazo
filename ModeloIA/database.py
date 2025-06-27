@@ -152,22 +152,39 @@ def register_response(id_consulta, texto, tipo):
         cursor.close()
         conn.close()
 
-def register_feedback(id_respuesta, estrellas, comentarios=None):
-    """Registra retroalimentación para una respuesta"""
+def register_feedback(id_respuesta, estrellas):
+    """Registra o actualiza retroalimentación para una respuesta"""
     conn = get_connection()
     if conn is None:
         return False
         
     cursor = conn.cursor()
     try:
+        # Primero verificamos si ya existe feedback para esta respuesta
         cursor.execute(
-            "INSERT INTO retroalimentacion (estrellas, comentarios, id_respuesta) VALUES (%s, %s, %s)",
-            (estrellas, comentarios, id_respuesta)
+            "SELECT id FROM retroalimentacion WHERE id_respuesta = %s",
+            (id_respuesta,)
         )
+        existing_feedback = cursor.fetchone()
+        
+        if existing_feedback:
+            # Si existe, actualizamos
+            cursor.execute(
+                "UPDATE retroalimentacion SET estrellas = %s WHERE id_respuesta = %s",
+                (estrellas, id_respuesta)
+            )
+        else:
+            # Si no existe, insertamos nuevo
+            cursor.execute(
+                "INSERT INTO retroalimentacion (estrellas, id_respuesta) VALUES (%s, %s)",
+                (estrellas, id_respuesta)
+            )
+        
         conn.commit()
         return True
+        
     except Error as e:
-        print(f"Error al registrar retroalimentación: {e}")
+        print(f"Error al registrar/actualizar retroalimentación: {e}")
         conn.rollback()
         return False
     finally:

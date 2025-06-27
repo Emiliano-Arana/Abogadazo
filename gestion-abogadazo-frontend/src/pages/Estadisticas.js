@@ -21,7 +21,7 @@ const Estadisticas = () => {
   const [stats, setStats] = useState({
     consultasDia: 0,
     promedioFeedback: 0,
-    crecimientoMensual: 0,
+    totalfeedbacks: 0,
     consultasMes: [],
     consultasMesAgentes: [],
     tiposConsultas: []
@@ -43,13 +43,13 @@ const Estadisticas = () => {
         
         setStats({
           consultasDia: daily.consultas_hoy,
-          promedioFeedback: feedback.promedio_feedback,
-          crecimientoMensual: feedback.crecimiento_mensual,
+          promedioFeedback: feedback.feedback_stats.promedio_feedback,
+          totalfeedbacks: feedback.feedback_stats.total_feedbacks,
           consultasMes: monthly.consultas_mes,
           consultasMesAgentes: monthlyagents.consultas_mes,
           tiposConsultas: types.tipos_consulta
         });
-        
+
       } catch (error) {
         console.error("Error fetching stats:", error);
       } finally {
@@ -122,16 +122,16 @@ const Estadisticas = () => {
               <FaStar size={30} className="mb-2 text-warning" />
               <h5>Promedio de feedback</h5>
               <p className="display-6 fw-bold">
-                {typeof stats.promedioFeedback === "number" ? stats.promedioFeedback.toFixed(1) : "N/A"} ⭐
+                {stats.promedioFeedback !== undefined ? stats.promedioFeedback.toFixed(1) : "0.0"} ⭐
               </p>
             </motion.div>
           </div>
           <div className="col-md-4">
             <motion.div className="card shadow p-4" whileHover={{ scale: 1.05 }}>
               <FaChartLine size={30} className="mb-2 text-info" />
-              <h5>Crecimiento mensual</h5>
+              <h5>No Calificaciones</h5>
               <p className="display-6 fw-bold">
-                {typeof stats.crecimientoMensual === "number" ? `${stats.crecimientoMensual}%` : "N/A"}
+                {stats.totalfeedbacks !== undefined ? stats.totalfeedbacks : "0"}
               </p>
             </motion.div>
           </div>

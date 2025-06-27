@@ -35,7 +35,7 @@ export const enviarFeedbackLegal = async ({ userId, pregunta, respuesta, rating 
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ userId, pregunta, respuesta, rating })
+      body: JSON.stringify({ userId, respuesta, rating })
     });
 
     if (!response.ok) {

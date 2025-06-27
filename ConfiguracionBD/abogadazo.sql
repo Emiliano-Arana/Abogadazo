@@ -54,7 +54,6 @@ CREATE TABLE respuesta (
 CREATE TABLE retroalimentacion (
   id SERIAL PRIMARY KEY,
   estrellas INT NOT NULL CHECK (estrellas BETWEEN 1 AND 5),
-  comentarios TEXT,
   id_respuesta INT,
   CONSTRAINT fk_retroalimentacion_respuesta FOREIGN KEY (id_respuesta) REFERENCES respuesta(id)
     ON DELETE SET NULL
