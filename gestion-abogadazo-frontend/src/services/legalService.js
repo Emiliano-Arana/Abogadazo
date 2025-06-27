@@ -1,12 +1,13 @@
-const API_URL = 'http://localhost:5000/api/chat-legal/consulta';
-const FEEDBACK_URL = 'http://localhost:5000/api/chat-legal/feedback';
+const API_URL = 'https://3568-2806-106e-1e-8e41-a5ce-2334-d890-509d.ngrok-free.app/api/chat-legal/consulta';
+const FEEDBACK_URL = 'https://3568-2806-106e-1e-8e41-a5ce-2334-d890-509d.ngrok-free.app/api/chat-legal/feedback';
 
 export const consultarChatLegal = async (pregunta,id_usuario) => {
   try {
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "1"
       },
       body: JSON.stringify({ pregunta,id_usuario })
     });
@@ -33,7 +34,8 @@ export const enviarFeedbackLegal = async ({ userId, pregunta, respuesta, rating 
     const response = await fetch(FEEDBACK_URL, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "1"
       },
       body: JSON.stringify({ userId, respuesta, rating })
     });

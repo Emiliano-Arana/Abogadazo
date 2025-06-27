@@ -2,17 +2,19 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS 
 from model import AsistenteLegal
 from datetime import datetime, timedelta
-from flask_ngrok import run_with_ngrok
 import database
 
 import os
 
-# REGISTRA TU AUTHTOKEN DE NGROK
-os.system("ngrok config add-authtoken cr_2z5DjRDtk5jD7aFcW1E7TUXhQGm")
-
 app = Flask(__name__)
-run_with_ngrok(app)
-CORS(app)  # Habilita CORS
+CORS(app, resources={r"/api/*": {
+    "origins": ["https://gentle-sfogliatella-08f198.netlify.app"],
+    "allow_headers": ["Content-Type", "Authorization", "ngrok-skip-browser-warning"],
+    "methods": ["GET", "POST", "OPTIONS"],
+    "supports_credentials": True
+}})
+
+
 
 legal_ai = AsistenteLegal()
 

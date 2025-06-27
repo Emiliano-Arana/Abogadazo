@@ -1,5 +1,13 @@
+const API_URL = 'https://3568-2806-106e-1e-8e41-a5ce-2334-d890-509d.ngrok-free.app';
 export const getDailyStats = async () => {
-  const response = await fetch('http://localhost:5000/api/admin/stats/daily');
+  
+  const response = await fetch(API_URL+'/api/admin/stats/daily',{
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "1"
+      }
+    });
   const data = await response.json();
   
   if (!response.ok) {
@@ -10,7 +18,13 @@ export const getDailyStats = async () => {
 };
 
 export const getMonthlyStats = async () => {
-  const response = await fetch('http://localhost:5000/api/admin/stats/monthly');
+  const response = await fetch(API_URL+'/api/admin/stats/monthly',{
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "1"
+      }
+    });
   const data = await response.json();
   
   if (!response.ok) {
@@ -21,7 +35,13 @@ export const getMonthlyStats = async () => {
 };
 
 export const getMonthlyStatsAgents = async () => {
-  const response = await fetch('http://localhost:5000/api/admin/stats/monthlyagents');
+  const response = await fetch(API_URL+'/api/admin/stats/monthlyagents',{
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "1"
+      }
+    });
   const data = await response.json();
   
   if (!response.ok) {
@@ -32,7 +52,13 @@ export const getMonthlyStatsAgents = async () => {
 };
 
 export const getConsultationTypes = async () => {
-  const response = await fetch('http://localhost:5000/api/admin/stats/types');
+  const response = await fetch(API_URL+'/api/admin/stats/types',{
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "1"
+      }
+    });
   const data = await response.json();
   
   if (!response.ok) {
@@ -43,7 +69,13 @@ export const getConsultationTypes = async () => {
 };
 
 export const getFeedbackStats = async () => {
-  const response = await fetch('http://localhost:5000/api/admin/stats/feedback');
+  const response = await fetch(API_URL+'/api/admin/stats/feedback',{
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "1"
+      }
+    });
   const data = await response.json();
   
   if (!response.ok) {

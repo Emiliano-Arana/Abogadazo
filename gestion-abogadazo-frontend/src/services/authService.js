@@ -1,7 +1,7 @@
 // src/services/authService.js
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000/usuarios';
+const API_URL = 'https://abogadazo-back.onrender.com/usuarios';
 
 const login = async (credentials) => {
   try {
