@@ -51,13 +51,14 @@ const AdministrarUsuarios = () => {
 
   const abrirModalEdicion = (user) => {
     setUserToEdit(user);
-    setEditData({ viejoUsuario:user.usuario, usuario:user.email, nombre: user.nombre, apellido: user.apellido, email: user.email, rol: user.rol });
+    setEditData({ usuario:user.email, nombre: user.nombre, apellido: user.apellido, email: user.email, rol: user.rol });
   };
 
   const guardarCambios = async () => {
     try {
       const updatedUser = { ...userToEdit, ...editData };
-      await updateUser(updatedUser);
+      console.log(updatedUser)
+      await updateUser(userToEdit.usuario,updatedUser);
       setUsers(users.map((u) =>
         u.usuario === userToEdit.usuario ? updatedUser : u
       ));
@@ -213,7 +214,7 @@ const AdministrarUsuarios = () => {
                         type="email"
                         className="form-control"
                         value={editData.email}
-                        onChange={(e) => setEditData({ ...editData, email: e.target.value })}
+                        onChange={(e) => setEditData({ ...editData, email: e.target.value ,usuario: e.target.value})}
                       />
                     </div>
                     <div className="mb-3">

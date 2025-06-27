@@ -60,7 +60,7 @@ const Perfil = () => {
 
         try {
             // Preparar datos para actualizar
-            const updatedData = {
+            const updatedData = {             
                 usuario: storedUser.correo,
                 nombre: inputs.nombre,
                 apellido: inputs.apellido,
@@ -68,7 +68,7 @@ const Perfil = () => {
                 email: storedUser.correo
             };
             // Llamar al servicio de actualización
-            const response = await updateUser(updatedData);
+            const response = await updateUser(storedUser.correo,updatedData);
             
             if (!response) {
                 throw new Error("No se recibió respuesta del servidor");

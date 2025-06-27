@@ -19,8 +19,8 @@ export const getUser = async (userId) => {
   return await response.json();
 };
 
-export const updateUser = async (userData) => {
-  const response = await fetch(`http://localhost:3000/usuarios/editar_usuario/${userData.viejoUsuario}`, {
+export const updateUser = async (viejoUsuario,userData) => {
+  const response = await fetch(`http://localhost:3000/usuarios/editar_usuario/${viejoUsuario}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(userData),
