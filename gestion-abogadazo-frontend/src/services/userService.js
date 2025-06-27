@@ -20,7 +20,7 @@ export const getUser = async (userId) => {
 };
 
 export const updateUser = async (userData) => {
-  const response = await fetch(`http://localhost:3000/usuarios/editar_usuario/${userData.usuario}`, {
+  const response = await fetch(`http://localhost:3000/usuarios/editar_usuario/${userData.viejoUsuario}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(userData),

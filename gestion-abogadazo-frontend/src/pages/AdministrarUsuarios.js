@@ -51,7 +51,7 @@ const AdministrarUsuarios = () => {
 
   const abrirModalEdicion = (user) => {
     setUserToEdit(user);
-    setEditData({ nombre: user.nombre, apellido: user.apellido, email: user.email, rol: user.rol });
+    setEditData({ viejoUsuario:user.usuario, usuario:user.email, nombre: user.nombre, apellido: user.apellido, email: user.email, rol: user.rol });
   };
 
   const guardarCambios = async () => {
